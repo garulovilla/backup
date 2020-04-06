@@ -1,9 +1,27 @@
 # Backup
 Backup files and folders
 
+## Commands
+
+### Create
+
+Create a new configuration file
+
+```shell
+node index.js create <config_file>
+```
+
+### Add
+
+Add a file or folder to a configuration file
+
+```shell
+node index.js add <file_folder> <config_file>
+```
+
 ## Configuration file
 
-```json
+```jsonc
 {
   // Directory where the backup will be made
   "path": "",

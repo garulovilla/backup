@@ -7,15 +7,57 @@ const util = require('./util')
  * @param {string} configFile Configuration file path
  */
 const create = async (configFile) => {
+  // Get absolute paths
+  const absolutePathConfigFile = path.resolve(configFile)
+  let absoluteBackupPath = path.dirname(configFile)
 
-}
+  // Check if configuration file exist
+  const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
+  if (existConfigFile) {
+    console.log('The configuration file already exist')
+    return
+  }
 
-/**
- * Run command
- * @param {string} configFile Configuration file path
- */
-const run = async (configFile) => {
+  // Ask for the path where to make the backup
+  let answers
+  try {
+    answers = await inquirer
+      .prompt([{
+        type: 'input',
+        name: 'backupPath',
+        message: 'Directory where the backup will be made?',
+        default: absoluteBackupPath
+      }
+      ])
+  } catch (error) {
+    return
+  }
 
+  // Get relative backup path
+  absoluteBackupPath = path.resolve(answers.backupPath)
+
+  // Check if backup folder exist
+  const existBackupFolder = await util.existFileOrFolder(absoluteBackupPath)
+  if (!existBackupFolder) {
+    console.log('The backup directory doesn\'t exist')
+    return
+  }
+
+  // Create default configuration object
+  const config = {
+    path: absoluteBackupPath,
+    backup: []
+  }
+
+  // Save configuration file
+  const fileSaved = util.saveConfigFile(config, absolutePathConfigFile)
+
+  // Message
+  if (fileSaved) {
+    console.log('Backup configuration created successfully')
+  } else {
+    console.log('Error saving configuration file')
+  }
 }
 
 /**
@@ -29,7 +71,8 @@ const add = async (configFile, fileOrFolder) => {
   const absolutePathFileOrFolder = path.resolve(fileOrFolder)
 
   // Check if configuration file exist
-  if (!await util.existFileOrFolder(absolutePathConfigFile)) {
+  const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
+  if (!existConfigFile) {
     console.log('The configuration file doesn\'t exist')
     return
   }
@@ -43,7 +86,8 @@ const add = async (configFile, fileOrFolder) => {
   }
 
   // Check if the file or folder exist
-  if (!await util.existFileOrFolder(absolutePathFileOrFolder)) {
+  const existFileOrFolder = util.existFileOrFolder(absolutePathFileOrFolder)
+  if (!existFileOrFolder) {
     console.log('The file or folder doesn\'t exist')
     return
   }
@@ -81,14 +125,26 @@ const add = async (configFile, fileOrFolder) => {
   })
 
   // Save configuration file
-  util.saveConfigFile(config, configFile)
+  const fileSaved = util.saveConfigFile(config, absolutePathConfigFile)
 
-  // Log
-  console.log('File or folder added successfully')
+  // Message
+  if (fileSaved) {
+    console.log('File or folder added successfully')
+  } else {
+    console.log('Error saving configuration file')
+  }
+}
+
+/**
+ * Run command
+ * @param {string} configFile Configuration file path
+ */
+const run = async (configFile) => {
+
 }
 
 module.exports = {
   create,
-  run,
-  add
+  add,
+  run
 }
