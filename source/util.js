@@ -1,4 +1,6 @@
-const fs = require('fs')
+const fsp = require('fs').promises
+const fse = require('fs-extra')
+const log = console.log
 
 /**
  * Read configuration file
@@ -6,8 +8,9 @@ const fs = require('fs')
  */
 const readConfigFile = async (path) => {
   try {
-    return JSON.parse(await fs.promises.readFile(path, 'utf-8'))
+    return JSON.parse(await fsp.readFile(path, 'utf-8'))
   } catch (e) {
+    log(e)
   }
 }
 
@@ -19,9 +22,10 @@ const readConfigFile = async (path) => {
  */
 const saveConfigFile = async (config, path) => {
   try {
-    await fs.promises.writeFile(path, JSON.stringify(config, null, '\t'))
+    await fsp.writeFile(path, JSON.stringify(config, null, '\t'))
     return true
   } catch (e) {
+    log(e)
     return false
   }
 }
@@ -33,7 +37,7 @@ const saveConfigFile = async (config, path) => {
  */
 const existFileOrFolder = async (path) => {
   try {
-    await fs.promises.access(path)
+    await fsp.access(path)
     return true
   } catch (e) {
     return false
@@ -50,9 +54,38 @@ const isFileOrFolderInBackup = (array, path) => {
   return array.some((element) => { return element.path === path })
 }
 
+/**
+ * Check if the path is a file
+ * @param {string} path Path
+ * @returns {boolean} Return true if the path is a file
+ */
+const isFile = async (path) => {
+  try {
+    const stat = await fsp.stat(path)
+    return stat.isFile()
+  } catch (e) {
+    log(e)
+  }
+}
+
+/**
+ * Copy file or folder
+ * @param {string} from From path
+ * @param {string} to To path
+ */
+const copyFileOrFolder = async (from, to) => {
+  try {
+    await fse.copy(from, to)
+  } catch (e) {
+    log(e)
+  }
+}
+
 module.exports = {
   readConfigFile,
   saveConfigFile,
   existFileOrFolder,
-  isFileOrFolderInBackup
+  isFileOrFolderInBackup,
+  isFile,
+  copyFileOrFolder
 }

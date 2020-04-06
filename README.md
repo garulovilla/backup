@@ -19,6 +19,14 @@ Add a file or folder to a configuration file
 node index.js add <file_folder> <config_file>
 ```
 
+### Run
+
+Run a configuration file
+
+```shell
+node index.js run <config_file>
+```
+
 ## Configuration file
 
 ```jsonc

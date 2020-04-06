@@ -1,6 +1,7 @@
 const inquirer = require('inquirer')
 const path = require('path')
 const util = require('./util')
+const log = console.log
 
 /**
  * Create command
@@ -14,7 +15,7 @@ const create = async (configFile) => {
   // Check if configuration file exist
   const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
   if (existConfigFile) {
-    console.log('The configuration file already exist')
+    log('The configuration file already exist')
     return
   }
 
@@ -39,7 +40,7 @@ const create = async (configFile) => {
   // Check if backup folder exist
   const existBackupFolder = await util.existFileOrFolder(absoluteBackupPath)
   if (!existBackupFolder) {
-    console.log('The backup directory doesn\'t exist')
+    log('The backup directory doesn\'t exist')
     return
   }
 
@@ -54,9 +55,9 @@ const create = async (configFile) => {
 
   // Message
   if (fileSaved) {
-    console.log('Backup configuration created successfully')
+    log('Backup configuration created successfully')
   } else {
-    console.log('Error saving configuration file')
+    log('Error saving configuration file')
   }
 }
 
@@ -73,7 +74,7 @@ const add = async (configFile, fileOrFolder) => {
   // Check if configuration file exist
   const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
   if (!existConfigFile) {
-    console.log('The configuration file doesn\'t exist')
+    log('The configuration file doesn\'t exist')
     return
   }
 
@@ -88,13 +89,13 @@ const add = async (configFile, fileOrFolder) => {
   // Check if the file or folder exist
   const existFileOrFolder = util.existFileOrFolder(absolutePathFileOrFolder)
   if (!existFileOrFolder) {
-    console.log('The file or folder doesn\'t exist')
+    log('The file or folder doesn\'t exist')
     return
   }
 
   // Check if the file or folder doesn't exist in the backup array
   if (util.isFileOrFolderInBackup(config.backup, absolutePathFileOrFolder)) {
-    console.log('The file or folder already exist in the configuration file')
+    log('The file or folder already exist in the configuration file')
     return
   }
 
@@ -129,9 +130,9 @@ const add = async (configFile, fileOrFolder) => {
 
   // Message
   if (fileSaved) {
-    console.log('File or folder added successfully')
+    log('File or folder added successfully')
   } else {
-    console.log('Error saving configuration file')
+    log('Error saving configuration file')
   }
 }
 
@@ -140,7 +141,57 @@ const add = async (configFile, fileOrFolder) => {
  * @param {string} configFile Configuration file path
  */
 const run = async (configFile) => {
+  // Get absolute paths
+  const absolutePathConfigFile = path.resolve(configFile)
 
+  // Check if configuration file exist
+  const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
+  if (!existConfigFile) {
+    log('The configuration file doesn\'t exist')
+    return
+  }
+
+  // Read configuration file
+  const config = await util.readConfigFile(configFile)
+  const absoluteBackupPath = path.resolve(config.path)
+
+  // Check if backup folder exist
+  const existBackupFolder = await util.existFileOrFolder(absoluteBackupPath)
+  if (!existBackupFolder) {
+    log('The backup directory doesn\'t exist')
+    return
+  }
+
+  // Check if backup array exist and has elements
+  if (!('backup' in config) || !config.backup.length) {
+    log('The backup array is empty')
+    return
+  }
+
+  // Loop to all files and directories
+  config.backup.forEach(async element => {
+    // Check if file or folder exist
+    const existFileOrFolder = await util.existFileOrFolder(element.path)
+
+    if (existFileOrFolder) {
+      const from = element.path
+      const isFile = util.isFile(from)
+      const filename = path.parse(from).base
+
+      let to = config.path
+
+      // If it is a file, then add filename
+      if (isFile) {
+        to += '\\' + filename
+      }
+
+      // Log
+      log(`Copy from: ${from} to ${to}`)
+
+      // Copy file or folder
+      util.copyFileOrFolder(from, to)
+    }
+  })
 }
 
 module.exports = {
