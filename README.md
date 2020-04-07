@@ -1,4 +1,5 @@
 # Backup
+
 Backup files and folders
 
 ## Commands
@@ -38,7 +39,7 @@ node index.js run <config_file>
     {
       // Path to file or folder to backup
       "path": "",
-      // Type of compression = [none, 7zip, zip]
+      // Type of compression = [none, 7z, zip]
       "compression": "none"
     }
   ]

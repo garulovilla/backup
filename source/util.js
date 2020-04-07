@@ -1,6 +1,10 @@
+const path = require('path')
 const fsp = require('fs').promises
 const fse = require('fs-extra')
-const log = console.log
+const pathTo7zip = require('7zip-bin').path7za
+const seven = require('node-7z')
+const AdmZip = require('adm-zip')
+const log = require('./log')
 
 /**
  * Read configuration file
@@ -10,7 +14,7 @@ const readConfigFile = async (path) => {
   try {
     return JSON.parse(await fsp.readFile(path, 'utf-8'))
   } catch (e) {
-    log(e)
+    log.error(e)
   }
 }
 
@@ -25,7 +29,7 @@ const saveConfigFile = async (config, path) => {
     await fsp.writeFile(path, JSON.stringify(config, null, '\t'))
     return true
   } catch (e) {
-    log(e)
+    log.error(e)
     return false
   }
 }
@@ -51,7 +55,9 @@ const existFileOrFolder = async (path) => {
  * @returns {boolean} Return true if one file or folder already exist in the array
  */
 const isFileOrFolderInBackup = (array, path) => {
-  return array.some((element) => { return element.path === path })
+  return array.some((element) => {
+    return element.path === path
+  })
 }
 
 /**
@@ -64,21 +70,74 @@ const isFile = async (path) => {
     const stat = await fsp.stat(path)
     return stat.isFile()
   } catch (e) {
-    log(e)
+    log.error(e)
   }
 }
 
 /**
- * Copy file or folder
+ * Backup file or folder
  * @param {string} from From path
  * @param {string} to To path
  */
-const copyFileOrFolder = async (from, to) => {
+const backupFileOrFolder = async (from, to) => {
+  const base = path.parse(from).base
+  // Check if it is a file
+  if (await isFile(from)) {
+    log.normal('-- Copy file')
+  } else {
+    log.normal('-- Copy folder')
+  }
+  // Copy
+  to += '\\' + base
+  log.normal(`-- To: ${to} \n`)
   try {
     await fse.copy(from, to)
   } catch (e) {
-    log(e)
+    log.error(e)
   }
+}
+
+/**
+ * Backup file or folder as 7z
+ * @param {string} from From path
+ * @param {string} to To path
+ */
+const backup7z = async (from, to) => {
+  const base = path.parse(from).base
+  // Check if it is a file
+  if (await isFile(from)) {
+    log.normal('-- 7z file')
+  } else {
+    log.normal('-- 7z folder')
+  }
+  to += '\\' + base + '.7z'
+  log.normal(`-- To: ${to} \n`)
+  // Write 7z
+  seven.add(to, from, {
+    $bin: pathTo7zip
+  })
+}
+
+/**
+ * Backup file or folder as zip
+ * @param {string} from From path
+ * @param {string} to To path
+ */
+const backupZip = async (from, to) => {
+  const zip = new AdmZip()
+  const base = path.parse(from).base
+  // Check if it is a file
+  if (await isFile(from)) {
+    log.normal('-- Zip file')
+    zip.addLocalFile(from)
+  } else {
+    log.normal('-- Zip folder')
+    zip.addLocalFolder(from, base)
+  }
+  to += '\\' + base + '.zip'
+  log.normal(`-- To: ${to} \n`)
+  // Write zip
+  zip.writeZip(to)
 }
 
 module.exports = {
@@ -87,5 +146,7 @@ module.exports = {
   existFileOrFolder,
   isFileOrFolderInBackup,
   isFile,
-  copyFileOrFolder
+  backupFileOrFolder,
+  backup7z,
+  backupZip
 }

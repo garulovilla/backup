@@ -1,8 +1,7 @@
-const inquirer = require('inquirer')
 const path = require('path')
+const inquirer = require('inquirer')
 const util = require('./util')
-const log = console.log
-
+const log = require('./log')
 /**
  * Create command
  * @param {string} configFile Configuration file path
@@ -15,21 +14,21 @@ const create = async (configFile) => {
   // Check if configuration file exist
   const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
   if (existConfigFile) {
-    log('The configuration file already exist')
+    log.error('The configuration file already exist')
     return
   }
 
   // Ask for the path where to make the backup
   let answers
   try {
-    answers = await inquirer
-      .prompt([{
+    answers = await inquirer.prompt([
+      {
         type: 'input',
         name: 'backupPath',
         message: 'Directory where the backup will be made?',
         default: absoluteBackupPath
       }
-      ])
+    ])
   } catch (error) {
     return
   }
@@ -40,7 +39,7 @@ const create = async (configFile) => {
   // Check if backup folder exist
   const existBackupFolder = await util.existFileOrFolder(absoluteBackupPath)
   if (!existBackupFolder) {
-    log('The backup directory doesn\'t exist')
+    log.error("The backup directory doesn't exist")
     return
   }
 
@@ -55,9 +54,9 @@ const create = async (configFile) => {
 
   // Message
   if (fileSaved) {
-    log('Backup configuration created successfully')
+    log.success('Backup configuration created successfully')
   } else {
-    log('Error saving configuration file')
+    log.error('Error saving configuration file')
   }
 }
 
@@ -74,7 +73,7 @@ const add = async (configFile, fileOrFolder) => {
   // Check if configuration file exist
   const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
   if (!existConfigFile) {
-    log('The configuration file doesn\'t exist')
+    log.error("The configuration file doesn't exist")
     return
   }
 
@@ -89,32 +88,28 @@ const add = async (configFile, fileOrFolder) => {
   // Check if the file or folder exist
   const existFileOrFolder = util.existFileOrFolder(absolutePathFileOrFolder)
   if (!existFileOrFolder) {
-    log('The file or folder doesn\'t exist')
+    log.error("The file or folder doesn't exist")
     return
   }
 
   // Check if the file or folder doesn't exist in the backup array
   if (util.isFileOrFolderInBackup(config.backup, absolutePathFileOrFolder)) {
-    log('The file or folder already exist in the configuration file')
+    log.error('The file or folder already exist in the configuration file')
     return
   }
 
   // Ask for additional options
   let answers
   try {
-    answers = await inquirer
-      .prompt([{
+    answers = await inquirer.prompt([
+      {
         type: 'list',
         name: 'compression',
         message: 'Compression type?',
         default: 0,
-        choices: [
-          'none',
-          '7zip',
-          'zip'
-        ]
+        choices: ['none', '7z', 'zip']
       }
-      ])
+    ])
   } catch (error) {
     return
   }
@@ -130,9 +125,9 @@ const add = async (configFile, fileOrFolder) => {
 
   // Message
   if (fileSaved) {
-    log('File or folder added successfully')
+    log.success('File or folder added successfully')
   } else {
-    log('Error saving configuration file')
+    log.error('Error saving configuration file')
   }
 }
 
@@ -147,7 +142,7 @@ const run = async (configFile) => {
   // Check if configuration file exist
   const existConfigFile = await util.existFileOrFolder(absolutePathConfigFile)
   if (!existConfigFile) {
-    log('The configuration file doesn\'t exist')
+    log.error("The configuration file doesn't exist")
     return
   }
 
@@ -158,40 +153,57 @@ const run = async (configFile) => {
   // Check if backup folder exist
   const existBackupFolder = await util.existFileOrFolder(absoluteBackupPath)
   if (!existBackupFolder) {
-    log('The backup directory doesn\'t exist')
+    log.error("The backup directory doesn't exist")
     return
   }
 
   // Check if backup array exist and has elements
   if (!('backup' in config) || !config.backup.length) {
-    log('The backup array is empty')
+    log.error('The backup array is empty')
     return
   }
 
   // Loop to all files and directories
-  config.backup.forEach(async element => {
+  let index = 0
+  for (const element of config.backup) {
+    // Add index
+    index++
+
     // Check if file or folder exist
     const existFileOrFolder = await util.existFileOrFolder(element.path)
 
+    // Log
+    log.file(`${index}. ${element.path}`)
+
+    // If file or folder exits, then backup
     if (existFileOrFolder) {
+      // Set from and to paths
       const from = element.path
-      const isFile = util.isFile(from)
-      const filename = path.parse(from).base
-
-      let to = config.path
-
-      // If it is a file, then add filename
-      if (isFile) {
-        to += '\\' + filename
-      }
+      const to = config.path
 
       // Log
-      log(`Copy from: ${from} to ${to}`)
+      log.normal('-- Path exist')
 
-      // Copy file or folder
-      util.copyFileOrFolder(from, to)
+      // Check if is needed compression
+      switch (element.compression) {
+        case 'none':
+          await util.backupFileOrFolder(from, to)
+          break
+        case '7z':
+          await util.backup7z(from, to)
+          break
+        case 'zip':
+          await util.backupZip(from, to)
+          break
+        default:
+          await util.backupFileOrFolder(from, to)
+          break
+      }
+    } else {
+      // Log
+      log.normal("-- Path doesn't exist")
     }
-  })
+  }
 }
 
 module.exports = {
