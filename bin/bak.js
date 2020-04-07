@@ -1,5 +1,7 @@
+#!/usr/bin/env node
+
 const { program } = require('commander')
-const { create, add, run } = require('./source/commands')
+const { create, add, run } = require('../lib/commands')
 
 program.version('0.0.1')
 

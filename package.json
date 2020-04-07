@@ -1,24 +1,29 @@
 {
-  "name": "backup",
+  "name": "bak",
   "version": "1.0.0",
   "description": "Backup files and folders",
-  "main": "index.js",
+  "main": "./lib/commands.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "bak": "./bin/bak.js"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/garulovilla/backup.git"
+    "url": "git+https://github.com/garulovilla/bak.git"
   },
   "keywords": [
-    "backup"
+    "backup",
+    "bak",
+    "sync"
   ],
   "author": "Garu Lovilla",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/garulovilla/backup/issues"
+    "url": "https://github.com/garulovilla/bak/issues"
   },
-  "homepage": "https://github.com/garulovilla/backup#readme",
+  "homepage": "https://github.com/garulovilla/bak#readme",
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",

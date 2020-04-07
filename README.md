@@ -1,6 +1,12 @@
-# Backup
+# Bak
 
 Backup files and folders
+
+## Install
+
+```shell
+npm install -g bak
+```
 
 ## Commands
 
@@ -9,7 +15,7 @@ Backup files and folders
 Create a new configuration file
 
 ```shell
-node index.js create <config_file>
+bak create <config_file>
 ```
 
 ### Add
@@ -17,7 +23,7 @@ node index.js create <config_file>
 Add a file or folder to a configuration file
 
 ```shell
-node index.js add <file_folder> <config_file>
+bak add <file_folder> <config_file>
 ```
 
 ### Run
@@ -25,7 +31,7 @@ node index.js add <file_folder> <config_file>
 Run a configuration file
 
 ```shell
-node index.js run <config_file>
+bak run <config_file>
 ```
 
 ## Configuration file
