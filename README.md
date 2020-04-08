@@ -38,15 +38,22 @@ bak run <config_file>
 
 ```jsonc
 {
-  // Directory where the backup will be made
+  // Directory where the backup will be made (required)
   "path": "",
-  // Array with the files and folders to backup
+  // Array with the files and folders to backup (optional)
   "backup": [
     {
-      // Path to file or folder to backup
+      // Name of backup (optional)
+      "name": "",
+      // Description of backup (optional)
+      "description": "",
+      // Path to file or folder to backup (required)
       "path": "",
-      // Type of compression = [none, 7z, zip]
-      "compression": "none"
+      // Type of compression: "", "7z", "zip" (optional)
+      "compression": "",
+      // A subfolder is created inside the backup folder
+      // with this name and it is where the content will be stored (optional)
+      "subfolder": ""
     }
   ]
 }
