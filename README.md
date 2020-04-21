@@ -57,12 +57,12 @@ bak run <config_file>
       // Type of compression: "", "7z", "zip" (optional, default="")
       "compression": "",
 
-      // A subfolder is created inside the backup folder
-      // with this name and it is where the content will be stored (optional, default=current backup path)
+      // A subfolder is created inside the backup folder with this name
+      // and it is where the content will be stored (optional, default=current backup path)
       "subfolder": "",
 
       // Rename the file o folder (optional, default=current name of file/folder)
-      // Be careful when the path is an array and no compression is needed
+      // Note: Be careful when the path is an array and no compression is needed
       // you need always set the "/o" patter to differentiate files and folder
       // Patters that can be used:
       // /s - Timestamp => yyyyMMddhhmmss
@@ -71,8 +71,15 @@ bak run <config_file>
       // /o - Original name of file/folder
       "rename": "",
 
+      // Only keep "n" number of backups. This is useful when you have
+      // a rename pattern like "/d_/o" and you want to delete previous backups
+      // to only keep "n" backups (optional, default=0 <means no delete any backup>)
+      // Note: This option only takes effect if the "rename" property
+      // is specified in the element
+      "keep": 3,
+
       // Backup this item? (optional, default=true)
-      "active" : true
+      "active": true
     }
   ]
 }
