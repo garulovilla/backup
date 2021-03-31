@@ -2,10 +2,11 @@
 
 Backup files and folders
 
-## Install
+## Install globally
 
 ```shell
-npm install -g bak
+cd bak
+npm link
 ```
 
 ## Commands
