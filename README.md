@@ -40,7 +40,7 @@ bak run <config_file>
 ```jsonc
 {
   // Directory where the backup will be made (required)
-  "path": "",
+  "to": "",
 
   // Array with the files and folders to backup (optional)
   "backup": [
@@ -53,7 +53,7 @@ bak run <config_file>
 
       // Path to file or folder to backup (required)
       // This can be a string or a array of strings
-      "path": "",
+      "from": "",
 
       // Type of compression: "", "7z", "zip" (optional, default="")
       "compression": "",
