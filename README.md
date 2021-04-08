@@ -62,6 +62,10 @@ bak run <config_file>
       // and it is where the content will be stored (optional, default=current backup path)
       "subfolder": "",
 
+      // When a folder is specified in from path, is posible filter
+      // the files/folder inside the folder with this option (optional, default ="" <no filter>)
+      "match": "",
+
       // Rename the file o folder (optional, default=current name of file/folder)
       // Note: Be careful when the path is an array and no compression is needed
       // you need always set the "/o" patter to differentiate files and folder
