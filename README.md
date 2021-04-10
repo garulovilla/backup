@@ -63,7 +63,8 @@ bak run <config_file>
       "subfolder": "",
 
       // When a folder is specified in from path, is posible filter
-      // the files/folder inside the folder with this option (optional, default ="" <no filter>)
+      // the files/folder inside the folder with this option
+      // it is possible set multiple filters separated with ";" (optional, default ="" <no filter>)
       "match": "",
 
       // Rename the file o folder (optional, default=current name of file/folder)
