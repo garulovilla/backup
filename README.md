@@ -75,6 +75,8 @@ bak run <config_file>
       // /d - Date => yyyyMMdd
       // /t - Time => hhmmss
       // /o - Original name of file/folder
+      // /n - Name of element
+      // /b - Subfolder of element
       "rename": "",
 
       // Only keep "n" number of backups. This is useful when you have
