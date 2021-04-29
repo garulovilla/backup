@@ -70,7 +70,7 @@ bak run <config_file>
       // Rename the file o folder (optional, default=current name of file/folder)
       // Note: Be careful when the path is an array and no compression is needed
       // you need always set the "/o" patter to differentiate files and folder
-      // Patters that can be used:
+      // patterns that can be used:
       // /s - Timestamp => yyyyMMddhhmmss
       // /d - Date => yyyyMMdd
       // /t - Time => hhmmss
