@@ -9,6 +9,12 @@ cd bak
 npm link
 ```
 
+### Insert in path environment
+
+```
+%USERPROFILE%\AppData\Roaming\npm\
+```
+
 ## Commands
 
 ### Create
