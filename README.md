@@ -11,7 +11,7 @@ npm link
 
 ### Insert in path environment
 
-```
+```shell
 %USERPROFILE%\AppData\Roaming\npm\
 ```
 
