@@ -70,7 +70,7 @@ bak run <config_file>
 
       // When a folder is specified in from path, is posible filter
       // the files/folder inside the folder with this option
-      // it is possible set multiple filters separated with ";" (optional, default ="" <no filter>)
+      // it is possible set multiple filters separated with ";" (optional, default="" <no filter>)
       "match": "",
 
       // Rename the file o folder (optional, default=current name of file/folder)
@@ -93,7 +93,12 @@ bak run <config_file>
       "keep": 3,
 
       // Backup this item? (optional, default=true)
-      "active": true
+      "active": true,
+
+      // Copy first to temp folder (optional, default=false)
+      // This is util when the compression is used and the files/folders
+      // are in use
+      "temp": false
     }
   ]
 }
